@@ -11,23 +11,23 @@ URegexCppBPLibrary::URegexCppBPLibrary(const FObjectInitializer& ObjectInitializ
 	: Super(ObjectInitializer) {}
 
 
-bool URegexCppBPLibrary::RegexMatch(FString str, FString pattern, bool ignoreCase) {
-	std::string s { TCHAR_TO_UTF8(*str) };
+bool URegexCppBPLibrary::RegexSimpleMatch(FString target, FString pattern, bool ignoreCase) {
+	std::string s { TCHAR_TO_UTF8(*target) };
 	std::regex p { ignoreCase ? std::regex { TCHAR_TO_UTF8(*pattern), std::regex_constants::icase } : std::regex { TCHAR_TO_UTF8(*pattern) } };
 
 	return std::regex_match(s, p);
 }
 
-bool URegexCppBPLibrary::RegexSearch(FString str, FString pattern, bool ignoreCase) {
-	std::string s { TCHAR_TO_UTF8(*str) };
+bool URegexCppBPLibrary::RegexSimpleSearch(FString target, FString pattern, bool ignoreCase) {
+	std::string s { TCHAR_TO_UTF8(*target) };
 	std::regex p { ignoreCase ? std::regex { TCHAR_TO_UTF8(*pattern), std::regex_constants::icase } : std::regex { TCHAR_TO_UTF8(*pattern) } };
 
 	return std::regex_search(s, p);
 }
 
-FString URegexCppBPLibrary::RegexReplace(FString str, FString pattern, FString newStr, bool ignoreCase) {
-	std::string s { TCHAR_TO_UTF8(*str) };
-	std::string ns { TCHAR_TO_UTF8(*newStr) };
+FString URegexCppBPLibrary::RegexSimpleReplace(FString target, FString pattern, FString substitution, bool ignoreCase) {
+	std::string s { TCHAR_TO_UTF8(*target) };
+	std::string ns { TCHAR_TO_UTF8(*substitution) };
 	std::regex p { ignoreCase ? std::regex { TCHAR_TO_UTF8(*pattern), std::regex_constants::icase } : std::regex { TCHAR_TO_UTF8(*pattern) } };
 
 	std::string result { std::regex_replace(s, p, ns) };
