@@ -4,33 +4,61 @@
 #include "RegexCpp.h"
 
 #include <string>
-#include <regex>
 
 
 URegexCppBPLibrary::URegexCppBPLibrary(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer) {}
 
 
-bool URegexCppBPLibrary::RegexSimpleMatch(FString target, FString pattern, bool ignoreCase) {
+void URegexCppBPLibrary::RegexMatch(FString target, FString pattern, bool ignoreCase, bool& isDone) {
 	std::string s { TCHAR_TO_UTF8(*target) };
 	std::regex p { ignoreCase ? std::regex { TCHAR_TO_UTF8(*pattern), std::regex_constants::icase } : std::regex { TCHAR_TO_UTF8(*pattern) } };
 
-	return std::regex_match(s, p);
+	isDone = std::regex_match(s, p);
 }
 
-bool URegexCppBPLibrary::RegexSimpleSearch(FString target, FString pattern, bool ignoreCase) {
+void URegexCppBPLibrary::RegexSearch(FString target, FString pattern, bool ignoreCase, bool& isDone) {
 	std::string s { TCHAR_TO_UTF8(*target) };
 	std::regex p { ignoreCase ? std::regex { TCHAR_TO_UTF8(*pattern), std::regex_constants::icase } : std::regex { TCHAR_TO_UTF8(*pattern) } };
 
-	return std::regex_search(s, p);
+	isDone = std::regex_search(s, p);
 }
 
-FString URegexCppBPLibrary::RegexSimpleReplace(FString target, FString pattern, FString substitution, bool ignoreCase) {
+void URegexCppBPLibrary::RegexReplace(FString target, FString pattern, FString substitution, bool ignoreCase, bool& isDone, FString& resultReplace) {
 	std::string s { TCHAR_TO_UTF8(*target) };
 	std::string ns { TCHAR_TO_UTF8(*substitution) };
 	std::regex p { ignoreCase ? std::regex { TCHAR_TO_UTF8(*pattern), std::regex_constants::icase } : std::regex { TCHAR_TO_UTF8(*pattern) } };
 
-	std::string result { std::regex_replace(s, p, ns) };
+	std::string resultString { std::regex_replace(s, p, ns) };
 
-	return FString { result.c_str() };
+	resultReplace = FString { resultString.c_str() };
+	isDone = !resultString.empty();
+}
+
+void URegexCppBPLibrary::RegexMatchExtended(FString target, FString pattern, bool ignoreCase, bool& isDone, FRegexSMatch& resultMatch) {
+	std::string s { TCHAR_TO_UTF8(*target) };
+	std::regex p { ignoreCase ? std::regex { TCHAR_TO_UTF8(*pattern), std::regex_constants::icase } : std::regex { TCHAR_TO_UTF8(*pattern) } };
+	std::smatch m {};
+
+	isDone = std::regex_match(s, m, p);
+	URegexCppBPLibrary::SMatch_To_FRegexSMatch(m, resultMatch);
+}
+
+void URegexCppBPLibrary::RegexSearchExtended(FString target, FString pattern, bool ignoreCase, bool& isDone, FRegexSMatch& resultMatch) {
+	std::string s { TCHAR_TO_UTF8(*target) };
+	std::regex p { ignoreCase ? std::regex { TCHAR_TO_UTF8(*pattern), std::regex_constants::icase } : std::regex { TCHAR_TO_UTF8(*pattern) } };
+	std::smatch m {};
+
+	isDone = std::regex_search(s, m, p);
+	URegexCppBPLibrary::SMatch_To_FRegexSMatch(m, resultMatch);
+}
+
+
+void URegexCppBPLibrary::SMatch_To_FRegexSMatch(const std::smatch& m, FRegexSMatch& regexSMatch) {
+	regexSMatch.size = static_cast<int32>(m.size());
+	regexSMatch.length = static_cast<int32>(m.length());
+	regexSMatch.position = static_cast<int32>(m.position());
+	regexSMatch.str = FString { m.str().c_str() };
+	regexSMatch.prefix = FString { m.prefix().str().c_str() };
+	regexSMatch.suffix = FString { m.suffix().str().c_str() };
 }
