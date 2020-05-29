@@ -14,13 +14,19 @@
 	"IsBetaVersion": true,
 	"IsExperimentalVersion": false,
 	"Installed": false,
+	"SupportedTargetPlatforms": [
+		"Win64",
+		"Win32"
+	],
 	"Modules": [
 		{
 			"Name": "RegexCpp",
 			"Type": "Runtime",
 			"LoadingPhase": "PreLoadingScreen",
-			"BlacklistPlatforms": [
-				"IOS"
+			"WhitelistPlatforms" :
+			[
+				"Win64",
+				"Win32"
 			]
 		}
 	]
